@@ -23,6 +23,8 @@
 .form-control label {
   display: block;
   width: 150px;
+  margin: 5px;
+  font-weight: bold;
 }
 
 .form-control input {
@@ -54,5 +56,26 @@
   cursor: pointer;
   text-decoration: none;
   font-size: 15px;
-  font-family: inherit;
+}
+
+table {
+  width: 700px;
+  border-radius: 5px;
+  border: 1px solid steelblue;
+}
+
+thead {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+table td {
+  border: 1px solid steelblue;
+}
+
+td {
+  height: 30px;
+  width: 160px;
+  text-align: center;
+  vertical-align: middle;
 }
