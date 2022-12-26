@@ -1,137 +1,80 @@
+import { useState, useEffect } from "react";
+
 import PesquisaForm from "./components/pesquisaForm";
 import TabelaTransferencias from "./components/tabelaTransferencias";
 
 function App() {
-  let transferencias = [
-    {
-      id: 1,
-      dataTransferencia: "2019-01-01T07:00:00-02:00",
-      valor: 30895.46,
-      tipo: "DEPOSITO",
-      conta: {
-        id: 1,
-        nomeResponsavel: "Fulano",
-      },
-    },
-    {
-      id: 2,
-      dataTransferencia: "2019-02-03T04:53:27-02:00",
-      valor: 12.24,
-      tipo: "DEPOSITO",
-      conta: {
-        id: 2,
-        nomeResponsavel: "Sicrano",
-      },
-    },
-    {
-      id: 3,
-      dataTransferencia: "2019-05-04T02:12:45-03:00",
-      valor: -500.5,
-      tipo: "SAQUE",
-      conta: {
-        id: 1,
-        nomeResponsavel: "Fulano",
-      },
-    },
-    {
-      id: 4,
-      dataTransferencia: "2019-08-07T02:12:45-03:00",
-      valor: -530.5,
-      tipo: "SAQUE",
-      conta: {
-        id: 2,
-        nomeResponsavel: "Sicrano",
-      },
-    },
-    {
-      id: 5,
-      dataTransferencia: "2020-06-08T04:15:01-03:00",
-      valor: -3241.23,
-      tipo: "TRANSFERENCIA",
-      conta: {
-        id: 1,
-        nomeResponsavel: "Fulano",
-      },
-    },
-    {
-      id: 6,
-      dataTransferencia: "2021-04-01T06:12:04-03:00",
-      valor: 25173.09,
-      tipo: "TRANSFERENCIA",
-      conta: {
-        id: 2,
-        nomeResponsavel: "Sicrano",
-      },
-    },
-    {
-      id: 1,
-      dataTransferencia: "2019-01-01T07:00:00-02:00",
-      valor: 30895.46,
-      tipo: "DEPOSITO",
-      conta: {
-        id: 1,
-        nomeResponsavel: "Fulano",
-      },
-    },
-    {
-      id: 2,
-      dataTransferencia: "2019-02-03T04:53:27-02:00",
-      valor: 12.24,
-      tipo: "DEPOSITO",
-      conta: {
-        id: 2,
-        nomeResponsavel: "Sicrano",
-      },
-    },
-    {
-      id: 3,
-      dataTransferencia: "2019-05-04T02:12:45-03:00",
-      valor: -500.5,
-      tipo: "SAQUE",
-      conta: {
-        id: 1,
-        nomeResponsavel: "Fulano",
-      },
-    },
-    {
-      id: 4,
-      dataTransferencia: "2019-08-07T02:12:45-03:00",
-      valor: -530.5,
-      tipo: "SAQUE",
-      conta: {
-        id: 2,
-        nomeResponsavel: "Sicrano",
-      },
-    },
-    {
-      id: 5,
-      dataTransferencia: "2020-06-08T04:15:01-03:00",
-      valor: -3241.23,
-      tipo: "TRANSFERENCIA",
-      conta: {
-        id: 1,
-        nomeResponsavel: "Fulano",
-      },
-    },
-    {
-      id: 6,
-      dataTransferencia: "2021-04-01T06:12:04-03:00",
-      valor: 25173.09,
-      tipo: "TRANSFERENCIA",
-      conta: {
-        id: 2,
-        nomeResponsavel: "Sicrano",
-      },
-    },
-  ];
+  const [transferencias, setTransferencias] = useState([]);
+  const [transferenciasSelecionadas, setTransferenciasSelecionadas] = useState(
+    []
+  );
+
+  useEffect(() => {
+    const getTransferencias = async () => {
+      const transfFromServer = await fetchAll();
+      setTransferencias(transfFromServer);
+      setTransferenciasSelecionadas(transfFromServer);
+    };
+
+    getTransferencias();
+  }, []);
+
+  const fetchAll = async () => {
+    const res = await fetch("http://localhost:8080/api/transferencias");
+    const data = await res.json();
+    return data;
+  };
+
+  const pesquisaOperador = async (operador) => {
+    const res = await fetch(
+      `http://localhost:8080/api/transferencias/operador/${operador}`
+    );
+    if (res.status === 200) {
+      const data = await res.json();
+      setTransferenciasSelecionadas(data);
+    }
+  };
+
+  const pesquisaPeriodo = async (dataInicio, dataFim) => {
+    const res = await fetch(
+      `http://localhost:8080/api/transferencias/periodo?dataInicio=${dataInicio}&dataFim=${dataFim}`
+    );
+    if (res.status === 200) {
+      const data = await res.json();
+      console.log("data: ", data);
+      setTransferenciasSelecionadas(data);
+    }
+  };
+
+  const pesquisaOperadorEPeriodo = async (dataInicio, dataFim, operador) => {
+    const res = await fetch(
+      `http://localhost:8080/api/transferencias/operador/periodo?dataInicio=${dataInicio}&dataFim=${dataFim}&operador=${operador}`
+    );
+    if (res.status === 200) {
+      const data = await res.json();
+      console.log("data: ", data);
+      setTransferenciasSelecionadas(data);
+    }
+  };
+
+  const resetPesquisa = async () => {
+    const transfFromServer = await fetchAll();
+    setTransferencias(transfFromServer);
+    setTransferenciasSelecionadas(transfFromServer);
+  };
 
   return (
     <div className="container">
       <h3>Transferências</h3>
-      <PesquisaForm />
+      <PesquisaForm
+        pesquisaOperador={pesquisaOperador}
+        pesquisaPeriodo={pesquisaPeriodo}
+        pesquisaOperadorEPeriodo={pesquisaOperadorEPeriodo}
+        resetPesquisa={resetPesquisa}
+      />
       <TabelaTransferencias
         todasTransferencias={transferencias}
-        transferenciasSelecionadas={transferencias}
+        transferenciasSelecionadas={transferenciasSelecionadas}
       />
     </div>
   );

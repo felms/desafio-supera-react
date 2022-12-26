@@ -2,7 +2,7 @@ const TabelaTransferencias = ({
   todasTransferencias,
   transferenciasSelecionadas,
 }) => {
-  const dataFormatada = (input) => {
+  const formataData = (input) => {
     let data = new Date(input),
       dia = data.getDate().toString(),
       diaF = dia.length === 1 ? "0" + dia : dia,
@@ -31,7 +31,7 @@ const TabelaTransferencias = ({
   const saldo = (transferencias) => {
     return transferencias.reduce((soma, transferencia) => {
       return soma + Number(transferencia.valor);
-    }, 0);
+    }, 0).toFixed(2);
   };
 
   return (
@@ -55,7 +55,7 @@ const TabelaTransferencias = ({
           {transferenciasSelecionadas.map((transferencia) => {
             return (
               <tr key={transferencia.id}>
-                <td>{dataFormatada(transferencia.dataTransferencia)}</td>
+                <td>{formataData(transferencia.dataTransferencia)}</td>
                 <td>{"R$ " + transferencia.valor}</td>
                 <td>{formataTipo(transferencia)}</td>
                 <td>{transferencia.conta.nomeResponsavel}</td>
